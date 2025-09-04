@@ -21,7 +21,7 @@ A custom script for **Enhancer for YouTube** that:
 1. Install **[Enhancer for YouTube](https://www.mrfdev.com/enhancer-for-youtube)** in your browser.
 2. Open **Enhancer for YouTube settings**.
 3. Go to the **Custom scripts** section.
-4. Paste the contents of `enhancer-shortcuts.js` into the script field.
+4. Paste the contents of `v1.js` into the script field.
 5. Save changes and refresh YouTube.
 
 ---
