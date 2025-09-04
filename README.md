@@ -47,7 +47,7 @@ This project is licensed under the **MIT License** – see the [LICENSE](LICENSE
 ---
 
 ## 📷 Preview
-*(Optional: add a screenshot or GIF showing the script in action)*
+![Preview of script](https://github.com/CYNOXREAL/enhancer-youtube-loop-next-shortcuts/blob/main/preview.png)
 
 ---
 
