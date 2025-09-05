@@ -3,7 +3,7 @@
 
     let lastVideo = null;
 
-    // Funkcja pokazująca toast z fade-in/fade-out
+    // Function showing a toast with fade-in/fade-out
     function showToast(text) {
         let toast = document.createElement('div');
         toast.textContent = text;
@@ -31,14 +31,14 @@
             toast.style.opacity = '1';
         });
 
-        // Fade-out po 1,2s
+        // Fade-out after 1.2s
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
         }, 1200);
     }
 
-    // Kliknięcie w przycisk pętli Enhancera
+    // Click on the Enhancer loop button
     function clickLoopButton(showStatus = true) {
         const loopBtn = document.querySelector('#efyt-loop');
         if (loopBtn) {
@@ -56,7 +56,7 @@
         }
     }
 
-    // Włączenie pętli przy starcie filmu (tylko raz)
+    // Enable loop at the start of the video (only once)
     function enableLoopOnce(video) {
         if (video && video !== lastVideo) {
             lastVideo = video;
@@ -73,18 +73,18 @@
         }
     }
 
-    // Kliknięcie w przycisk "Następny"
+    // Click on the "Next" button
     function clickNextVideo() {
         const nextBtn = document.querySelector('.ytp-next-button');
         if (nextBtn) {
             nextBtn.click();
             showToast('Next Video');
         } else {
-            console.warn('[Enhancer Script] Nie znaleziono przycisku Next');
+            console.warn('[Enhancer Script] Next button not found');
         }
     }
 
-    // Obsługa skrótów klawiszowych
+    // Keyboard shortcuts handling
     document.addEventListener('keydown', (e) => {
         if (!e.target.matches('input, textarea')) {
             if (e.key.toLowerCase() === 'r') {
@@ -96,7 +96,7 @@
         }
     });
 
-    // Obserwowanie zmian w DOM, aby wykryć nowy film
+    // Observing DOM changes to detect a new video
     const observer = new MutationObserver(() => {
         const video = document.querySelector('video');
         if (video) {
