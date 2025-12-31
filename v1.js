@@ -1,9 +1,17 @@
-(function() {
+// YouTube Auto Loop + Shortcuts (Enhancer version)
+// Author: CYNOXREAL
+// GitHub: https://github.com/CYNOXREAL
+(function () {
     'use strict';
 
-    let lastVideo = null;
+    let lastVideoId = null;
+    let userDisabledLoop = false;
 
-    // Function showing a toast with fade-in/fade-out
+    function getVideoId() {
+        const url = new URL(location.href);
+        return url.searchParams.get("v");
+    }
+
     function showToast(text) {
         let toast = document.createElement('div');
         toast.textContent = text;
@@ -26,82 +34,77 @@
         `;
         document.body.appendChild(toast);
 
-        // Fade-in
-        requestAnimationFrame(() => {
-            toast.style.opacity = '1';
-        });
-
-        // Fade-out after 1.2s
+        requestAnimationFrame(() => toast.style.opacity = '1');
         setTimeout(() => {
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
         }, 1200);
     }
 
-    // Click on the Enhancer loop button
     function clickLoopButton(showStatus = true) {
         const loopBtn = document.querySelector('#efyt-loop');
-        if (loopBtn) {
-            const btn = loopBtn.closest('button, svg');
-            btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+        if (!loopBtn) return;
 
-            if (showStatus) {
-                setTimeout(() => {
-                    const video = document.querySelector('video');
-                    if (video) {
-                        showToast(video.loop ? 'Loop ON' : 'Loop OFF');
-                    }
-                }, 100);
-            }
-        }
+        const btn = loopBtn.closest('button, svg');
+        btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+        setTimeout(() => {
+            const video = document.querySelector('video');
+            if (!video) return;
+
+            // we remember the user's decision
+            if (!video.loop) userDisabledLoop = true;
+            if (video.loop) userDisabledLoop = false;
+
+            if (showStatus) showToast(video.loop ? 'Loop ON' : 'Loop OFF');
+        }, 100);
     }
 
-    // Enable loop at the start of the video (only once)
-    function enableLoopOnce(video) {
-        if (video && video !== lastVideo) {
-            lastVideo = video;
-            const checkBtn = setInterval(() => {
-                const loopBtn = document.querySelector('#efyt-loop');
-                if (loopBtn) {
-                    if (!video.loop) {
-                        clickLoopButton(false);
-                        showToast('Loop ON');
-                    }
-                    clearInterval(checkBtn);
+    function enableLoopForNewVideo() {
+        const video = document.querySelector('video');
+        if (!video) return;
+
+        let tries = 0;
+        const waitLoop = setInterval(() => {
+            const loopBtn = document.querySelector('#efyt-loop');
+
+            if (loopBtn) {
+                // auto-loop only if the user has not disabled it
+                if (!userDisabledLoop && !video.loop) {
+                    clickLoopButton(false);
+                    showToast("Loop ON");
                 }
-            }, 300);
-        }
+                clearInterval(waitLoop);
+            }
+
+            tries++;
+            if (tries > 25) clearInterval(waitLoop);
+        }, 200);
     }
 
-    // Click on the "Next" button
-    function clickNextVideo() {
-        const nextBtn = document.querySelector('.ytp-next-button');
-        if (nextBtn) {
-            nextBtn.click();
-            showToast('Next Video');
-        } else {
-            console.warn('[Enhancer Script] Next button not found');
-        }
-    }
-
-    // Keyboard shortcuts handling
+    // keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (!e.target.matches('input, textarea')) {
-            if (e.key.toLowerCase() === 'r') {
-                clickLoopButton(true);
-            }
+            if (e.key.toLowerCase() === 'r') clickLoopButton(true);
+
             if (e.key.toLowerCase() === 'n') {
-                clickNextVideo();
+                const nextBtn = document.querySelector('.ytp-next-button');
+                if (nextBtn) {
+                    nextBtn.click();
+                    showToast("Next Video");
+                }
             }
         }
     });
 
-    // Observing DOM changes to detect a new video
-    const observer = new MutationObserver(() => {
-        const video = document.querySelector('video');
-        if (video) {
-            enableLoopOnce(video);
+    // detecting a new movie by ID
+    setInterval(() => {
+        const id = getVideoId();
+        if (!id) return;
+
+        if (id !== lastVideoId) {
+            lastVideoId = id;
+            enableLoopForNewVideo();
         }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    }, 300);
 })();
